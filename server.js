@@ -3,6 +3,7 @@ const YAML = require('yamljs');
 const TelegramBot = require('node-telegram-bot-api');
 const schedule = require('node-schedule');
 const moment = require('moment');
+const fetch = require('node-fetch');
 
 // Load configuration
 const config = YAML.load('config.yaml');
@@ -18,6 +19,30 @@ function validUserId(userId) {
     }
     return true
 }
+
+function getUserName(userId) {
+  bot.getChat(userId).then(chat => {
+      let userName = '';
+
+      // Check if it's a private chat
+      // if (chat.type === 'private') {
+          // Construct the user's name. Some users may not have a username.
+          userName = `${chat.first_name || ''} ${chat.last_name || ''}`.trim();
+          
+          // If the user has a username, append it.
+          if (chat.username) {
+              userName += ` (@${chat.username})`;
+          }
+
+          return `User Name: ${userName}`;
+      // } else {
+      //     console.log('N/A - This ID does not seem to be a private user chat.');
+      // }
+  }).catch(error => {
+      console.error('Error retrieving user chat:', error);
+  });
+}
+
 
 // Convert AM/PM format time string to the next JavaScript Date object
 function convertToNextScheduledDate(timeString) {
@@ -39,7 +64,7 @@ function handleRepeatedPinging(userId) {
     return;
   }
 
-  console.log("Hurling chaos on userId:", userId);
+  console.log("Hurling chaos on user:", userId);
   const intervalId = setInterval(() => {
     const message = config.messages[Math.floor(Math.random() * config.messages.length)];
     bot.sendMessage(userId, message);
@@ -47,6 +72,32 @@ function handleRepeatedPinging(userId) {
 
   pingIntervals.set(userId, intervalId);
 }
+}
+
+//TODO: Work on this function so that it chooses the random value here instead of in the
+// handleRepeatedPinging function. Also make sure that when "both" is selected, that the list
+// that it is selecting from contains both images and text rather than just one or the other.
+
+function sendMessageToUser(userId) {
+  const mode = config.mode;
+
+  // Send text messages
+  if (mode === "text" || mode === "both") {
+      config.messages.forEach(message => {
+          bot.sendMessage(userId, message.text);
+      });
+  }
+
+  // Send images/GIFs
+  if (mode === "images" || mode === "both") {
+      config.images.forEach(image => {
+          if (image.url.endsWith('.gif')) {
+              bot.sendAnimation(userId, image.url);
+          } else {
+              bot.sendPhoto(userId, image.url);
+          }
+      });
+  }
 }
 
 // Command to stop all pinging
