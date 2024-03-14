@@ -69,7 +69,8 @@ bot.onText(/\/schedule/, (msg) => {
     config.users.forEach(user => {
       const nextScheduledDate = convertToNextScheduledDate(user.startTime);
       schedule.scheduleJob(nextScheduledDate, function() {
-        console.log(`Unleashing the pings for userId: ${user.id} at ${user.startTime}`);
+        console.log(`Unleashing the scheduled chaos on userId: ${user.id} at ${user.startTime}`);
+        bot.sendMessage(config.adminUserID, `Unleashing the scheduled chaos on userId: ${user.id}`);
         handleRepeatedPinging(user.id);
       });
     });
@@ -80,6 +81,8 @@ bot.onText(/\/schedule/, (msg) => {
 });
 
 bot.onText(/\/chaos/, (msg) => {
+    //reload the config
+    // config = YAML.load('config.yaml');
   if (msg.from.id === config.adminUserID) {
     // Schedule pinging for configured users
     config.users.forEach(user => {
