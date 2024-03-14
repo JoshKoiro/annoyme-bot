@@ -1,0 +1,11 @@
+token: YOUR_BOT_TOKEN
+pingInterval: 60000 # in milliseconds
+messages:
+  - "Time to work!"
+  - "Keep going!"
+adminUserID: YOUR_TELEGRAM_USER_ID
+users:
+  - id: USER_ID_1
+    startTime: "09:00"
+  - id: USER_ID_2
+    startTime: "10:00"
