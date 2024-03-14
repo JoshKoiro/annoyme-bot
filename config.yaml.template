@@ -6,6 +6,6 @@ messages:
 adminUserID: YOUR_TELEGRAM_USER_ID
 users:
   - id: USER_ID_1
-    startTime: "09:00"
+    startTime: "09:00 AM"
   - id: USER_ID_2
-    startTime: "10:00"
+    startTime: "10:00 PM"
