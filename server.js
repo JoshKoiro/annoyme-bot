@@ -3,7 +3,6 @@ const YAML = require('yamljs');
 const TelegramBot = require('node-telegram-bot-api');
 const schedule = require('node-schedule');
 const moment = require('moment');
-const fetch = require('node-fetch');
 
 // Load configuration
 const config = YAML.load('config.yaml');
@@ -56,6 +55,61 @@ function convertToNextScheduledDate(timeString) {
   return scheduleTime.toDate();
 }
 
+//TODO: abstract out the send text and send images logic
+
+function sendMessageToUser(userId) {
+  if (!validUserId(userId)) {
+      return;
+  }
+  const mode = config.mode;
+
+  // Send text messages
+  if (mode === "text") {
+      config.messages.forEach(message => {
+          bot.sendMessage(userId, message.text);
+      });
+  }
+
+  // Send images/GIFs
+  if (mode === "images") {
+      config.images.forEach(image => {
+          if (image.url.endsWith('.gif')) {
+              bot.sendAnimation(userId, image.url);
+          } else {
+              bot.sendPhoto(userId, image.url);
+          }
+      });
+  }
+
+  // Send both
+  if (mode === "both") {
+      // determine which kind of meesage to send choose randomly between text or image
+      const messageType = Math.round(Math.random());
+
+      if (messageType === 0) {
+         // select random message from the list of text messages
+         const message = config.messages[Math.floor(Math.random() * config.messages.length)];
+         bot.sendMessage(userId, message);
+      }
+
+      if (messageType === 1) {
+          
+          // Choose between images and GIFs
+          const imageType = Math.round(Math.random());
+          if (imageType === 0) {
+              const selectedImage = config.images[Math.floor(Math.random() * config.images.length)];
+              bot.sendPhoto(userId, selectedImage.url);
+          }
+
+          if (imageType === 1) {
+              const selectedAnimation = config.gifs[Math.floor(Math.random() * config.gifs.length)];
+              bot.sendAnimation(userId, selectedAnimation.url);
+          }
+          }
+      }
+    }   
+
+
 // Function to handle repeated pinging
 function handleRepeatedPinging(userId) {
     if(validUserId(userId)){ 
@@ -66,38 +120,11 @@ function handleRepeatedPinging(userId) {
 
   console.log("Hurling chaos on user:", userId);
   const intervalId = setInterval(() => {
-    const message = config.messages[Math.floor(Math.random() * config.messages.length)];
-    bot.sendMessage(userId, message);
+    sendMessageToUser(userId);
   }, config.pingInterval);
 
   pingIntervals.set(userId, intervalId);
 }
-}
-
-//TODO: Work on this function so that it chooses the random value here instead of in the
-// handleRepeatedPinging function. Also make sure that when "both" is selected, that the list
-// that it is selecting from contains both images and text rather than just one or the other.
-
-function sendMessageToUser(userId) {
-  const mode = config.mode;
-
-  // Send text messages
-  if (mode === "text" || mode === "both") {
-      config.messages.forEach(message => {
-          bot.sendMessage(userId, message.text);
-      });
-  }
-
-  // Send images/GIFs
-  if (mode === "images" || mode === "both") {
-      config.images.forEach(image => {
-          if (image.url.endsWith('.gif')) {
-              bot.sendAnimation(userId, image.url);
-          } else {
-              bot.sendPhoto(userId, image.url);
-          }
-      });
-  }
 }
 
 // Command to stop all pinging
@@ -132,8 +159,6 @@ bot.onText(/\/schedule/, (msg) => {
 });
 
 bot.onText(/\/chaos/, (msg) => {
-    //reload the config
-    // config = YAML.load('config.yaml');
   if (msg.from.id === config.adminUserID) {
     // Schedule pinging for configured users
     config.users.forEach(user => {
