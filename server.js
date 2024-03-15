@@ -190,8 +190,23 @@ bot.onText(/\/chaos/, (msg) => {
   }
 });
 
+// TODO:
+// Use the ping command to send a message to an individual user
+
+
+// automatically start the scheduled pings
+config.users.forEach(user => {
+  console.log(`\nA volley is scheduled for userId: ${user.id} at ${user.startTime}\n`);
+  const nextScheduledDate = convertToNextScheduledDate(user.startTime);
+  schedule.scheduleJob(nextScheduledDate, function() {
+    console.log(`Unleashing the scheduled chaos on userId: ${user.id} at ${user.startTime}`);
+    bot.sendMessage(config.adminUserID, `Unleashing the scheduled chaos on userId: ${user.id}`);
+    handleRepeatedPinging(user.id, config.pingInterval);
+  });
+});
+
 // Express server setup
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`Annoy-Me-Bot is running... Express Server on port:${port}`);
 });
