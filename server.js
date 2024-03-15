@@ -65,20 +65,24 @@ function sendMessageToUser(userId) {
 
   // Send text messages
   if (mode === "text") {
-      config.messages.forEach(message => {
-          bot.sendMessage(userId, message.text);
-      });
+    const message = config.messages[Math.floor(Math.random() * config.messages.length)];
+    bot.sendMessage(userId, message);
   }
 
   // Send images/GIFs
   if (mode === "images") {
-      config.images.forEach(image => {
-          if (image.url.endsWith('.gif')) {
-              bot.sendAnimation(userId, image.url);
-          } else {
-              bot.sendPhoto(userId, image.url);
-          }
-      });
+    const imageType = Math.round(Math.random());
+    if (imageType === 0) {
+        const selectedImage = config.images[Math.floor(Math.random() * config.images.length)];
+        console.log("sending selected image: " + selectedImage.url)
+        bot.sendPhoto(userId, selectedImage.url);
+    }
+
+    if (imageType === 1) {
+        const selectedAnimation = config.gifs[Math.floor(Math.random() * config.gifs.length)];
+        console.log("sending selected image as animation: " + selectedAnimation.url)
+        bot.sendAnimation(userId, selectedAnimation.url);
+    }
   }
 
   // Send both
