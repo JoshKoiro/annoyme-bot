@@ -98,11 +98,13 @@ function sendMessageToUser(userId) {
           const imageType = Math.round(Math.random());
           if (imageType === 0) {
               const selectedImage = config.images[Math.floor(Math.random() * config.images.length)];
+              console.log("sending selected image: " + selectedImage.url)
               bot.sendPhoto(userId, selectedImage.url);
           }
 
           if (imageType === 1) {
               const selectedAnimation = config.gifs[Math.floor(Math.random() * config.gifs.length)];
+              console.log("sending selected image as animation: " + selectedAnimation.url)
               bot.sendAnimation(userId, selectedAnimation.url);
           }
           }
@@ -111,7 +113,7 @@ function sendMessageToUser(userId) {
 
 
 // Function to handle repeated pinging
-function handleRepeatedPinging(userId) {
+function handleRepeatedPinging(userId, rate) {
     if(validUserId(userId)){ 
   if (pingIntervals.has(userId)) {
     console.log("Chaos is already unleashed on this user:", userId);
@@ -121,7 +123,7 @@ function handleRepeatedPinging(userId) {
   console.log("Hurling chaos on user:", userId);
   const intervalId = setInterval(() => {
     sendMessageToUser(userId);
-  }, config.pingInterval);
+  }, rate);
 
   pingIntervals.set(userId, intervalId);
 }
@@ -149,7 +151,7 @@ bot.onText(/\/schedule/, (msg) => {
       schedule.scheduleJob(nextScheduledDate, function() {
         console.log(`Unleashing the scheduled chaos on userId: ${user.id} at ${user.startTime}`);
         bot.sendMessage(config.adminUserID, `Unleashing the scheduled chaos on userId: ${user.id}`);
-        handleRepeatedPinging(user.id);
+        handleRepeatedPinging(user.id, config.pingInterval);
       });
     });
     bot.sendMessage(msg.chat.id, "Chaos is scheduled by admin.");
@@ -158,11 +160,24 @@ bot.onText(/\/schedule/, (msg) => {
   }
 });
 
+bot.onText(/\/volley/, (msg) => {
+  if (msg.from.id === config.adminUserID) {
+    // Schedule pinging for configured users
+    config.users.forEach(user => {
+        handleRepeatedPinging(user.id, config.pingInterval);
+      });
+    console.log("Admin is unleashing a volley of chaos on everyone...at ", moment().format("h:mm A"));
+    bot.sendMessage(msg.chat.id, "You are now unleashing a volley of chaos on everyone...");
+  } else {
+    bot.sendMessage(msg.chat.id, "You are not authorized to unleash a volley of chaos from this bot...");
+  }
+});
+
 bot.onText(/\/chaos/, (msg) => {
   if (msg.from.id === config.adminUserID) {
     // Schedule pinging for configured users
     config.users.forEach(user => {
-        handleRepeatedPinging(user.id);
+        handleRepeatedPinging(user.id, config.chaosInterval);
       });
     console.log("Admin is unleashing chaos on everyone...at ", moment().format("h:mm A"));
     bot.sendMessage(msg.chat.id, "You are now unleashing chaos on everyone...");
