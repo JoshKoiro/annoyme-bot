@@ -1,11 +1,22 @@
-token: YOUR_BOT_TOKEN
-pingInterval: 60000 # in milliseconds
-messages:
-  - "Time to work!"
-  - "Keep going!"
-adminUserID: YOUR_TELEGRAM_USER_ID
+token:  # Your bot token
+pingInterval: 6000 # in milliseconds
+chaosInterval: 2000 # in milliseconds
+adminUserID:  # Your user ID
+mode: "text" # Options: "text", "images", "both"
 users:
-  - id: USER_ID_1
-    startTime: "09:00 AM"
-  - id: USER_ID_2
-    startTime: "10:00 PM"
+  - id: # USER_ID_1
+    startTime: "3:25 PM"
+  # - id: # USER_ID_2
+  #   startTime: "10:00 PM"
+messages:
+  - "Hey there! It's time to hit the hay and dream of a world without alarms. Sweet dreams... or else. 😴💤"
+  # More messages here
+images:
+  - url: "https://giphy.com/embed/vOGPwT3buij6g"
+  # more images here
+gifs:
+  - url: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExa3U0b3R4OTM2ajMzZGtiMjNnY3FtZzBtc2NxdW5wZm41aXJ6Y2FwayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/QthHQMMfHaGk0/giphy.gif"
+  - url: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMmo5eGJjbDRwajMzdXhueW1iNG1rdjRvdGxpemhsaXNrbzBoOG5ibyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/tVdn1YOjAMaiPpY4fC/giphy.gif"
+  - url: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjhnc25ub3ozbW44NnV5N3p1ajExZ3FiYnNwYmkyeXo5bnJhN2lsMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/f6h0ntoYNGAjm/giphy.gif"
+  - url: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExc2p4cXdnanh6YnRyZzFkeDlocDZkZ3hxMnl3M3NqNXI2NnQ0M253NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/SHEcjjdZz1tWU/giphy.gif"
+  # more gifs here
